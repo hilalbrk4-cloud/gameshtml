@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch Oyun Dünyası</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f2f6;
+            color: #2f3542;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            color: #ff4757;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .vote-notice {
+            background-color: #ffeaa7;
+            color: #d63031;
+            padding: 12px 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .game-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e4e7eb;
+        }
+
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .game-info {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border-top: 1px solid #e4e7eb;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2f3542;
+        }
+
+        .like-btn {
+            background-color: #ffffff;
+            color: #ff4757;
+            border: 2px solid #ff4757;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .like-btn:hover {
+            background-color: #ff4757;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2);
+        }
+
+        .like-btn:active {
+            transform: scale(0.95);
+        }
+
+        .like-btn.liked {
+            background-color: #2ed573;
+            border-color: #2ed573;
+            color: white;
+            box-shadow: 0 4px 10px rgba(46, 213, 115, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Scratch Arcade Oyun Portalı</h1>
+        <div class="vote-notice">Lütfen verilen emeğe göre oylama yapınız</div>
+    </header>
+
+    <div class="games-grid" id="gamesContainer"></div>
+
+    <script>
+        // Bilgisayardan doğrudan açılmaya uygun (Yalın Liste)
+        const gamesList = [
+            { id: "game1", title: "2D Craft BETA Play", file: "2DCraftBETAplay.html" },
+            { id: "game2", title: "Abdulkerim'in Projesi", file: "abdulkerim.html" },
+            { id: "game3", title: "Ali Kağan'ın Projesi", file: "alikağan.html" },
+            { id: "game4", title: "Arda Kar'ın Projesi", file: "ardakar.html" },
+            { id: "game5", title: "Asım Kerem'in Projesi", file: "Asım Kerem ardıç'ın Projesi ellemeyin.html" },
+            { id: "game6", title: "Ayşe Bayır'ın Projesi", file: "AYSEBAYİR.html" },
+            { id: "game7", title: "Ayşe İlayda'nın Projesi", file: "ayseilayda.html" },
+            { id: "game8", title: "Ayşe Yaren'in Projesi", file: "AYSEYAREN.html" },
+            { id: "game9", title: "Bekir'in Projesi", file: "BEKİR.html" },
+            { id: "game10", title: "Berat Yıldırım'ın Projesi", file: "berat yıldırım.html" },
+            { id: "game11", title: "Cemre Rabia'nın Projesi", file: "CEMRERABİA.html" },
+            { id: "game12", title: "Dursun'un Projesi", file: "dursun.html" },
+            { id: "game13", title: "Elif Yağmur'un Projesi", file: "elifyagmur.html" },
+            { id: "game14", title: "Elisa Öykü'nün Projesi", file: "ELİSAOYKU.html" },
+            { id: "game15", title: "Ensar'ın Projesi", file: "ENSAR.html" },
+            { id: "game16", title: "Esila Nur'un Projesi", file: "esila nur.html" },
+            { id: "game17", title: "Fatma İlayda'nın Projesi", file: "Fatma İlayda.html" },
+            { id: "game18", title: "Fatmanur'un Projesi", file: "fatmanur.html" },
+            { id: "game19", title: "Gülnisa'nın Projesi", file: "gulnisa.html" },
+            { id: "game20", title: "Gülperi'nin Projesi", file: "gulperi.html" },
+            { id: "game21", title: "Hümeyra'nın Projesi", file: "HÜMEYRA123.html" },
+            { id: "game22", title: "İlkay'ın Projesi", file: "ilkay.html" },
+            { id: "game23", title: "Lütfi CR7 Messi Projesi", file: "LÜTFİ cr7 messi.html" },
+            { id: "game24", title: "Meyra'nın Projesi", file: "meyras.html" },
+            { id: "game25", title: "Miray'ın Projesi", file: "miray.html" },
+            { id: "game26", title: "M. Mustafa'nın Projesi", file: "MMUSTAFA.html" },
+            { id: "game27", title: "Nisa Ceylin'in Projesi", file: "nisa-ceylin.html" },
+            { id: "game28", title: "Rana ve Ecrin'in Projesi", file: "RANA VE ECRİN.html" },
+            { id: "game29", title: "Ravzanur Aslan'ın Projesi", file: "ravzanur aslan 6 G.html" },
+            { id: "game30", title: "Rızvan'ın Projesi", file: "rızvan.html" }
+        ];
+
+        const container = document.getElementById('gamesContainer');
+
+        gamesList.forEach(game => {
+            let currentLikes = parseInt(localStorage.getItem(`likes_${game.id}`)) || 0;
+            let isLiked = localStorage.getItem(`liked_status_${game.id}`) === 'true';
+
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="iframe-container">
+                    <iframe src="${game.file}" scrolling="no" allowfullscreen></iframe>
+                </div>
+                <div class="game-info">
+                    <span class="game-title">${game.title}</span>
+                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${game.id}', this)">
+                        ❤️ <span class="like-count">${currentLikes}</span>
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        function toggleLike(gameId, button) {
+            let currentLikes = parseInt(localStorage.getItem(`likes_${gameId}`)) || 0;
+            let isLiked = localStorage.getItem(`liked_status_${gameId}`) === 'true';
+            const countSpan = button.querySelector('.like-count');
+
+            if (!isLiked) {
+                currentLikes++;
+                localStorage.setItem(`likes_${gameId}`, currentLikes);
+                localStorage.setItem(`liked_status_${gameId}`, 'true');
+                button.classList.add('liked');
+            } else {
+                currentLikes = Math.max(0, currentLikes - 1);
+                localStorage.setItem(`likes_${gameId}`, currentLikes);
+                localStorage.setItem(`liked_status_${gameId}`, 'false');
+                button.classList.remove('liked');
+            }
+
+            countSpan.textContent = currentLikes;
+        }
+    </script>
+</body>
+</html>
